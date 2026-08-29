@@ -49,3 +49,14 @@ export function parseWismaSatokPage(html) {
   if (!Number.isFinite(aqi) || !Number.isFinite(observedAt.getTime())) throw new Error('AQICN station live data was invalid');
   return { aqi, pm25, observedAt: observedAt.toISOString() };
 }
+
+export function parseAirnetFeed(payload) {
+  const data = typeof payload === 'string' ? JSON.parse(payload) : payload;
+  const sample = data?.feed?.pm25;
+  if (!Array.isArray(sample) || sample.length < 2) throw new Error('AQICN AirNet feed changed; live PM2.5 data was not found');
+  const observedAt = new Date(Number(sample[0]) * 1000);
+  const pm25 = Number(sample[1]) / 100;
+  const aqi = pm25ToUsAqi(pm25);
+  if (!Number.isFinite(aqi) || !Number.isFinite(observedAt.getTime())) throw new Error('AQICN AirNet live data was invalid');
+  return { aqi, pm25, observedAt: observedAt.toISOString() };
+}

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { aqiBand, parseWaqiAqi, pm25ToUsAqi, parseWismaSatokPage } from '../src/aqi.js';
+import { aqiBand, parseAirnetFeed, parseWaqiAqi, pm25ToUsAqi, parseWismaSatokPage } from '../src/aqi.js';
 
 test('AQI bands follow the US AQI breakpoints', () => {
   assert.equal(aqiBand(50).level, 'good');
@@ -25,5 +25,13 @@ test('extracts current Wisma Satok PM2.5 from the station page', () => {
     aqi: 275,
     pm25: 225.2,
     observedAt: '2026-08-29T21:00:02.000Z'
+  });
+});
+
+test('extracts the newest Wisma Satok value from the AirNet feed', () => {
+  assert.deepEqual(parseAirnetFeed({ feed: { pm25: [1788040802, 23950] } }), {
+    aqi: 289,
+    pm25: 239.5,
+    observedAt: '2026-08-29T22:00:02.000Z'
   });
 });

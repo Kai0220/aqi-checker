@@ -2,7 +2,7 @@ import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { aqiBand, parseWaqiAqi, parseWismaSatokPage } from './src/aqi.js';
+import { aqiBand, parseAirnetFeed, parseWaqiAqi } from './src/aqi.js';
 
 const PORT = Number(process.env.PORT) || 3000;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -10,6 +10,7 @@ const PUBLIC_DIR = path.join(__dirname, 'public');
 const CACHE_TTL_MS = 60 * 1000;
 const KUCHING_URL = 'https://aqicn.org/city/malaysia/sarawak/kuching/';
 const WISMA_SATOK_URL = 'https://aqicn.org/station/malaysia-kuching-wisma-satok/';
+const WISMA_SATOK_FEED_URL = 'https://airnet.waqi.info/airnet/feed/hourly/2508724';
 let cache = null;
 
 async function getHtml(url, provider) {
@@ -30,7 +31,7 @@ async function getKuchingReading(forceRefresh = false) {
   if (!forceRefresh && cache && Date.now() - cache.createdAt < CACHE_TTL_MS) return { ...cache.value, cached: true };
   const [kuchingResult, wismaResult] = await Promise.allSettled([
     getHtml(KUCHING_URL, 'AQICN'),
-    getHtml(WISMA_SATOK_URL, 'AQICN Wisma Satok')
+    getHtml(WISMA_SATOK_FEED_URL, 'AQICN Wisma Satok')
   ]);
   let kuching;
   if (kuchingResult.status === 'fulfilled') {
@@ -46,7 +47,7 @@ async function getKuchingReading(forceRefresh = false) {
   let wismaSatok;
   if (wismaResult.status === 'fulfilled') {
     try {
-      const parsed = parseWismaSatokPage(wismaResult.value);
+      const parsed = parseAirnetFeed(wismaResult.value);
       wismaSatok = { provider: 'WAQI / AQICN', station: 'Wisma Satok', ...parsed, ...aqiBand(parsed.aqi), sourceUrl: WISMA_SATOK_URL };
     } catch (error) {
       wismaSatok = { provider: 'WAQI / AQICN', station: 'Wisma Satok', error: error.message, sourceUrl: WISMA_SATOK_URL };

@@ -34,7 +34,7 @@ Cloudflare configuration lives in `wrangler.jsonc`. Change its `name` before dep
 
 ## Data and responsible use
 
-The backend reads public AQICN pages and caches results for 60 seconds. Wisma Satok's PM2.5 concentration is converted using US EPA AQI breakpoints. PurpleAir is rendered using the public widget configuration supplied for sensor 280734.
+The backend reads public AQICN data and caches results for 60 seconds. Wisma Satok uses AQICN's token-free AirNet feed because it is fresher than the station page's embedded HTML snapshot; its PM2.5 concentration is converted using US EPA AQI breakpoints. PurpleAir is rendered using the public widget configuration supplied for sensor 280734.
 
 Scraping depends on third-party markup and can break when a provider changes its site. Review the [AQICN](https://aqicn.org/contact/) and [PurpleAir](https://www2.purpleair.com/policies/terms-of-service) terms before operating a public deployment, and avoid excessive requests.
 

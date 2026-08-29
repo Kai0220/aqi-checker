@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Compare live Kuching air quality readings from AQICN and PurpleAir.">
+  <title>Kuching Air Reader</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css?v=7">
+</head>
+<body>
+  <div class="glow glow-one"></div><div class="glow glow-two"></div>
+  <main>
+    <nav>
+      <a class="brand" href="/"><span class="brand-mark">K</span><span>Kuching Air</span></a>
+      <div class="nav-actions"><span class="live-pill"><i></i> Live comparison</span><button id="theme-toggle" class="icon-button" type="button" aria-label="Switch to dark mode">&#9790;</button></div>
+    </nav>
+
+    <section class="hero">
+      <div class="eyebrow">KUCHING, SARAWAK</div>
+      <h1>One city.<br><em>Three perspectives.</em></h1>
+      <p>Compare readings from a regional monitor and two local sensor locations around Kuching.</p>
+      <div class="location-chip"><span class="pin">&#9673;</span><span><small>MONITORING AREA</small><strong>Kuching, Sarawak, Malaysia</strong></span></div>
+    </section>
+
+    <section class="comparison" aria-labelledby="comparison-title">
+      <div class="section-heading">
+        <div><span class="overline">LIVE READINGS</span><h2 id="comparison-title">Air quality comparison</h2></div>
+        <span id="updated" class="updated">Updating&hellip;</span>
+      </div>
+
+      <div class="comparison-grid">
+        <article class="monitor-card featured" id="kuching-card">
+          <header><span class="source-icon waqi">W</span><div><h3>Kuching</h3><p>AQICN city monitor</p></div><a href="https://aqicn.org/city/malaysia/sarawak/kuching" target="_blank" rel="noreferrer" aria-label="Open Kuching on AQICN">&#8599;</a></header>
+          <div id="kuching-loading" class="card-loading">Reading monitor&hellip;</div>
+          <div id="kuching-result" class="hidden">
+            <div class="reading"><strong id="kuching-aqi">&mdash;</strong><span>US AQI</span></div>
+            <span id="kuching-status" class="status">Unavailable</span>
+            <div class="meter"><i id="kuching-meter"></i></div>
+            <footer><span>Regional reference</span><time id="kuching-time">&mdash;</time></footer>
+          </div>
+        </article>
+
+        <article class="monitor-card widget-card">
+          <header><span class="source-icon satok">WS</span><div><h3>Wisma Satok</h3><p>AQICN AirNet sensor</p></div><a href="https://aqicn.org/station/malaysia-kuching-wisma-satok/" target="_blank" rel="noreferrer" aria-label="Open Wisma Satok on AQICN">&#8599;</a></header>
+          <div id="wisma-loading" class="card-loading">Reading monitor&hellip;</div>
+          <div id="wisma-result" class="hidden">
+            <div class="reading"><strong id="wisma-aqi">&mdash;</strong><span>US AQI</span></div>
+            <span id="wisma-status" class="status">Unavailable</span>
+            <div class="meter"><i id="wisma-meter"></i></div>
+            <div class="native-details"><span>Updated by AQICN</span><time id="wisma-time">&mdash;</time></div>
+          </div>
+          <footer class="widget-footer"><span>Wisma Satok, Jalan Kulas</span><span>Server-side scrape</span></footer>
+        </article>
+
+        <article class="monitor-card widget-card purple-card">
+          <header><span class="source-icon purple">P</span><div><h3>PurpleAir 280734</h3><p>10-minute US EPA AQI</p></div><a href="https://map.purpleair.com/air-quality-standards-us-epa-aqi?select=280734&amp;opt=%2F1%2Flp%2Fa10%2Fp604800%2FcC0#8.56/1.2452/110.3562" target="_blank" rel="noreferrer" aria-label="Open sensor 280734 on PurpleAir">&#8599;</a></header>
+          <div class="widget-shell purpleair-widget">
+            <div id="PurpleAirWidget_280734_module_US_EPA_AQI_conversion_C0_average_10_layer_US_EPA_AQI">Loading PurpleAir widget&hellip;</div>
+          </div>
+          <footer class="widget-footer"><span>Local PurpleAir sensor</span><span>10-minute average</span></footer>
+        </article>
+      </div>
+
+      <div class="comparison-note"><span>i</span><p>Readings may differ because the monitors use different sensor hardware, positions, averaging windows, and calculation methods. Compare the trend and category rather than treating the values as interchangeable.</p></div>
+    </section>
+  </main>
+
+  <footer class="page-footer"><span>Sources: <a href="https://aqicn.org/" target="_blank" rel="noreferrer">World Air Quality Index Project</a> and <a href="https://www2.purpleair.com/" target="_blank" rel="noreferrer">PurpleAir</a></span><span>For awareness, not medical guidance</span></footer>
+  <script src="/app.js?v=7" defer></script>
+  <script src="https://www.purpleair.com/pa.widget.js?key=JU9LU5Z4GK86VKZX&amp;module=US_EPA_AQI&amp;conversion=C0&amp;average=10&amp;layer=US_EPA_AQI&amp;container=PurpleAirWidget_280734_module_US_EPA_AQI_conversion_C0_average_10_layer_US_EPA_AQI" defer></script>
+</body>
+</html>

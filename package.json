@@ -1,0 +1,22 @@
+{
+  "name": "kuching-air-reader",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Open-source dashboard comparing current Kuching AQI readings.",
+  "license": "MIT",
+  "keywords": ["air-quality", "aqi", "kuching", "sarawak", "cloudflare-workers"],
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "node --test",
+    "cloudflare:dev": "wrangler dev",
+    "cloudflare:deploy": "wrangler deploy"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "wrangler": "^4.33.1"
+  }
+}

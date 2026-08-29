@@ -2,7 +2,7 @@
   "$schema": "./node_modules/wrangler/config-schema.json",
   "name": "kuching-air-reader",
   "main": "worker.js",
-  "compatibility_date": "2026-08-30",
+  "compatibility_date": "2026-08-29",
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",

@@ -24,6 +24,19 @@ function displayTime(value) {
   }).format(date);
 }
 
+function displayObservationTime(value) {
+  if (!value) return 'Update time unavailable';
+  const date = new Date(value);
+  if (Number.isNaN(date.valueOf())) return value;
+  const parts = new Intl.DateTimeFormat('en-MY', {
+    weekday: 'long', hour: 'numeric', minute: '2-digit', hour12: false,
+    hourCycle: 'h23',
+    timeZone: 'Asia/Kuala_Lumpur'
+  }).formatToParts(date);
+  const part = type => parts.find(item => item.type === type)?.value;
+  return `Updated on ${part('weekday')} ${Number(part('hour'))}:${part('minute')}`;
+}
+
 function renderSource(prefix, source) {
   const loading = document.querySelector(`#${prefix}-loading`);
   const result = document.querySelector(`#${prefix}-result`);
@@ -36,7 +49,7 @@ function renderSource(prefix, source) {
     meter.style.left = '0%';
   } else {
     aqi.textContent = source.aqi; status.textContent = source.label;
-    time.textContent = source.observedLabel || displayTime(source.observedAt);
+    time.textContent = source.observedLabel || displayObservationTime(source.observedAt);
     meter.style.left = `calc(${Math.min(source.aqi / 300 * 100, 100)}% - 5px)`;
     status.dataset.level = source.level;
   }

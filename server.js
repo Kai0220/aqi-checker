@@ -2,7 +2,7 @@ import http from 'node:http';
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { aqiBand, parseAirnetFeed, parseWaqiAqi } from './src/aqi.js';
+import { aqiBand, parseAirnetFeed, parseWaqiAqi, parseWaqiUpdatedLabel } from './src/aqi.js';
 
 const PORT = Number(process.env.PORT) || 3000;
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -37,7 +37,8 @@ async function getKuchingReading(forceRefresh = false) {
   if (kuchingResult.status === 'fulfilled') {
     try {
       const aqi = parseWaqiAqi(kuchingResult.value);
-      kuching = { provider: 'WAQI / AQICN', station: 'Kuching, Sarawak', aqi, ...aqiBand(aqi), observedAt: new Date().toISOString(), sourceUrl: KUCHING_URL };
+      const observedLabel = parseWaqiUpdatedLabel(kuchingResult.value);
+      kuching = { provider: 'WAQI / AQICN', station: 'Kuching, Sarawak', aqi, ...aqiBand(aqi), observedLabel, sourceUrl: KUCHING_URL };
     } catch (error) {
       kuching = { provider: 'WAQI / AQICN', station: 'Kuching, Sarawak', error: error.message, sourceUrl: KUCHING_URL };
     }

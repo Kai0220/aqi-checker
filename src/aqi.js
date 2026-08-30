@@ -27,6 +27,13 @@ export function parseWaqiAqi(html) {
   return aqi;
 }
 
+export function parseWaqiUpdatedLabel(html) {
+  const match = html.match(/id=['"]aqiwgtutime['"][^>]*>\s*(Updated on [^<]+)</i)
+    || html.match(/"time":"(Updated on [^"]+)"/i);
+  if (!match) throw new Error('AQICN page format changed; update time was not found');
+  return match[1].replace(/\\u([0-9a-f]{4})/gi, (_, code) => String.fromCharCode(parseInt(code, 16))).trim();
+}
+
 export function pm25ToUsAqi(concentration) {
   const value = Math.floor(concentration * 10) / 10;
   const breakpoints = [

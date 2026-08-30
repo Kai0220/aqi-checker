@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { aqiBand, parseAirnetFeed, parseWaqiAqi, pm25ToUsAqi, parseWismaSatokPage } from '../src/aqi.js';
+import { aqiBand, parseAirnetFeed, parseWaqiAqi, parseWaqiUpdatedLabel, pm25ToUsAqi, parseWismaSatokPage } from '../src/aqi.js';
 
 test('AQI bands follow the US AQI breakpoints', () => {
   assert.equal(aqiBand(50).level, 'good');
@@ -12,6 +12,10 @@ test('AQI bands follow the US AQI breakpoints', () => {
 
 test('extracts the current reading from simplified provider HTML', () => {
   assert.equal(parseWaqiAqi('<div>Real-time Air Quality Index (AQI). | 158 | Unhealthy Updated today</div>'), 158);
+});
+
+test('extracts AQICN provider update label', () => {
+  assert.equal(parseWaqiUpdatedLabel("<span id='aqiwgtutime'>Updated on Sunday 8:00</span>"), 'Updated on Sunday 8:00');
 });
 
 test('converts PM2.5 concentration using US EPA AQI breakpoints', () => {

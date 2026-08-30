@@ -1,4 +1,4 @@
-import { aqiBand, parseAirnetFeed, parseWaqiAqi } from './src/aqi.js';
+import { aqiBand, parseAirnetFeed, parseWaqiAqi, parseWaqiUpdatedLabel } from './src/aqi.js';
 
 const KUCHING_URL = 'https://aqicn.org/city/malaysia/sarawak/kuching/';
 const WISMA_SATOK_URL = 'https://aqicn.org/station/malaysia-kuching-wisma-satok/';
@@ -21,6 +21,21 @@ async function readSource(url, parser, station, sourceUrl = url) {
   }
 }
 
+async function readKuching() {
+  try {
+    const response = await fetch(KUCHING_URL, { headers });
+    if (!response.ok) throw new Error(`AQICN returned HTTP ${response.status}`);
+    const html = await response.text();
+    const aqi = parseWaqiAqi(html);
+    return {
+      provider: 'WAQI / AQICN', station: 'Kuching, Sarawak', aqi,
+      ...aqiBand(aqi), observedLabel: parseWaqiUpdatedLabel(html), sourceUrl: KUCHING_URL
+    };
+  } catch (error) {
+    return { provider: 'WAQI / AQICN', station: 'Kuching, Sarawak', error: error.message, sourceUrl: KUCHING_URL };
+  }
+}
+
 async function readings(request) {
   const cache = caches.default;
   const cacheKey = new Request(new URL('/api/kuching', request.url), request);
@@ -30,7 +45,7 @@ async function readings(request) {
     if (cached) return cached;
   }
   const [kuching, wismaSatok] = await Promise.all([
-    readSource(KUCHING_URL, parseWaqiAqi, 'Kuching, Sarawak'),
+    readKuching(),
     readSource(WISMA_SATOK_FEED_URL, parseAirnetFeed, 'Wisma Satok', WISMA_SATOK_URL)
   ]);
   const response = Response.json({

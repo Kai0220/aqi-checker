@@ -1,4 +1,6 @@
 const themeButton = document.querySelector('#theme-toggle');
+const refreshButton = document.querySelector('#refresh-button');
+const liveSources = {};
 
 function applyTheme(theme) {
   document.documentElement.dataset.theme = theme;
@@ -52,13 +54,29 @@ function renderSource(prefix, source) {
     time.textContent = source.observedLabel || displayObservationTime(source.observedAt);
     meter.style.left = `calc(${Math.min(source.aqi / 300 * 100, 100)}% - 5px)`;
     status.dataset.level = source.level;
+    liveSources[prefix] = source;
   }
   loading.classList.add('hidden'); result.classList.remove('hidden');
+  updateAqiGuide();
 }
 
-async function loadKuching() {
+function updateAqiGuide() {
+  document.querySelectorAll('.live-readings').forEach(container => { container.textContent = ''; });
+  Object.entries(liveSources).forEach(([prefix, source]) => {
+    const container = document.querySelector(`[data-aqi-band="${source.level}"] .live-readings`);
+    if (!container) return;
+    const badge = document.createElement('span');
+    badge.textContent = `${prefix === 'wisma' ? 'Wisma Satok' : 'Kuching'} ${source.aqi}`;
+    container.append(badge);
+  });
+  document.querySelectorAll('[data-aqi-band]').forEach(row => row.classList.toggle('is-current', Boolean(row.querySelector('.live-readings span'))));
+}
+
+async function loadKuching(forceRefresh = false) {
+  refreshButton.disabled = true;
+  refreshButton.classList.add('is-refreshing');
   try {
-    const response = await fetch('/api/kuching', { cache: 'no-store' });
+    const response = await fetch(`/api/kuching${forceRefresh ? '?refresh=1' : ''}`, { cache: 'no-store' });
     const data = await response.json();
     if (!response.ok || !data.sources) throw new Error(data.error || 'The Kuching readings are unavailable');
     renderSource('kuching', data.sources.kuching);
@@ -68,8 +86,12 @@ async function loadKuching() {
     renderSource('kuching', { error: error.message });
     renderSource('wisma', { error: error.message });
     document.querySelector('#updated').textContent = 'Update failed';
+  } finally {
+    refreshButton.disabled = false;
+    refreshButton.classList.remove('is-refreshing');
   }
 }
 
 initTheme();
 loadKuching();
+refreshButton.addEventListener('click', () => loadKuching(true));

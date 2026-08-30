@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Compare live Kuching air quality readings from AQICN and PurpleAir.">
   <title>Kuching Air Reader</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -15,7 +16,7 @@
   <main>
     <nav>
       <a class="brand" href="/"><span class="brand-mark">K</span><span>Kuching Air</span></a>
-      <div class="nav-actions"><span class="live-pill"><i></i> Live comparison</span><button id="theme-toggle" class="icon-button" type="button" aria-label="Switch to dark mode">&#9790;</button></div>
+      <div class="nav-actions"><span class="live-pill"><i></i> Live comparison</span><button id="refresh-button" class="refresh-button" type="button" aria-label="Refresh live readings"><span aria-hidden="true">&#8635;</span><b>Refresh</b></button><button id="theme-toggle" class="icon-button" type="button" aria-label="Switch to dark mode">&#9790;</button></div>
     </nav>
 
     <section class="hero">
@@ -65,6 +66,23 @@
       </div>
 
       <div class="comparison-note"><span>i</span><p>Readings may differ because the monitors use different sensor hardware, positions, averaging windows, and calculation methods. Compare the trend and category rather than treating the values as interchangeable.</p></div>
+    </section>
+
+    <section class="aqi-guide" aria-labelledby="aqi-guide-title">
+      <div class="guide-heading">
+        <div><span class="overline">US AIR QUALITY INDEX</span><h2 id="aqi-guide-title">What does the AQI level mean?</h2></div>
+        <p>The highlighted rows show where the current Kuching and Wisma Satok readings fall.</p>
+      </div>
+      <div class="guide-table" role="table" aria-label="US AQI health guidance">
+        <div class="guide-row guide-header" role="row"><span>AQI</span><span>Level</span><span>Health implications</span><span>Recommended action</span></div>
+        <div class="guide-row" data-aqi-band="good" role="row"><strong>0–50</strong><div><b>Good</b><span class="live-readings"></span></div><p>Air quality is satisfactory and pollution poses little or no risk.</p><p>Enjoy normal outdoor activities.</p></div>
+        <div class="guide-row" data-aqi-band="moderate" role="row"><strong>51–100</strong><div><b>Moderate</b><span class="live-readings"></span></div><p>Air quality is acceptable, although unusually sensitive people may notice effects.</p><p>Unusually sensitive people may consider reducing prolonged outdoor exertion.</p></div>
+        <div class="guide-row" data-aqi-band="sensitive" role="row"><strong>101–150</strong><div><b>Unhealthy for sensitive groups</b><span class="live-readings"></span></div><p>Sensitive groups may experience health effects; the general public is less likely to be affected.</p><p>Children, older adults, and people with heart or lung conditions should limit prolonged outdoor exertion.</p></div>
+        <div class="guide-row" data-aqi-band="unhealthy" role="row"><strong>151–200</strong><div><b>Unhealthy</b><span class="live-readings"></span></div><p>Everyone may begin to experience health effects; sensitive groups may experience more serious effects.</p><p>Sensitive groups should avoid prolonged exertion; everyone else should reduce it.</p></div>
+        <div class="guide-row" data-aqi-band="very-unhealthy" role="row"><strong>201–300</strong><div><b>Very unhealthy</b><span class="live-readings"></span></div><p>Health warning: the risk of health effects is increased for everyone.</p><p>Avoid prolonged or heavy outdoor exertion and consider moving activities indoors.</p></div>
+        <div class="guide-row" data-aqi-band="hazardous" role="row"><strong>301+</strong><div><b>Hazardous</b><span class="live-readings"></span></div><p>Health alert: everyone is at increased risk of serious health effects.</p><p>Avoid outdoor exertion and follow local health guidance.</p></div>
+      </div>
+      <p class="guide-source">General US AQI guidance. People with symptoms or health concerns should follow advice from local health authorities.</p>
     </section>
   </main>
 

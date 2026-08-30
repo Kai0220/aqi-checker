@@ -6,6 +6,8 @@ A lightweight, open-source air-quality dashboard for Kuching, Sarawak. It places
 
 ![Kuching Air Reader dashboard in dark mode](docs/assets/kuching-air-reader.png)
 
+The interface includes a one-click refresh control, provider observation times, a matching browser-tab icon, and responsive cards that adapt from a three-column desktop comparison to a single-column phone layout.
+
 ## What this project does
 
 Kuching Air Reader combines three perspectives:
@@ -22,15 +24,26 @@ The readings are deliberately shown separately rather than averaged. Sensor hard
 
 - Live comparison of three Kuching-area readings
 - Provider observation times in Malaysia time
+- One-click refresh that bypasses the backend cache
+- Live AQI health guide with highlighted Kuching and Wisma Satok bands
 - Native light and dark themes
 - Responsive desktop and mobile layouts
 - Equal-height comparison cards on desktop
+- Custom Kuching Air “K” favicon
 - 60-second server cache to reduce provider traffic
 - No private API token required
 - Local Node.js server and Cloudflare Workers deployment
 - Shared, tested US EPA PM2.5-to-AQI conversion
 
 > This dashboard is for general awareness only. It is not medical advice or an official emergency-alert service.
+
+## AQI health guide
+
+Below the live readings, the site explains all six US AQI bands—from Good to Hazardous—with concise health implications and suggested actions. The current Kuching and Wisma Satok readings appear as live badges inside their corresponding rows, making the numbers easier to interpret at a glance.
+
+![Live US AQI health guide with highlighted readings](docs/assets/aqi-health-guide.png)
+
+The guide intentionally excludes advertising and promotional links from the provider pages. Its recommendations are general guidance; users should follow local health-authority advice when conditions are severe or symptoms occur.
 
 ## How it works
 
@@ -96,13 +109,13 @@ The Worker serves the files under `public/` and handles `/api/kuching` at the ed
 }
 ```
 
-Add `?refresh=1` during diagnostics to bypass the backend cache. Avoid using forced refreshes in normal traffic.
+The header's **Refresh** button calls this endpoint with `?refresh=1`, bypassing the 60-second backend cache for an immediate AQICN update. PurpleAir continues refreshing through its own live widget. Avoid automating forced refreshes or using them for normal background traffic.
 
 ## Project structure
 
 ```text
-docs/assets/      README images
-public/           HTML, CSS, and browser JavaScript
+docs/assets/      Dashboard and AQI-guide screenshots
+public/           HTML, CSS, browser JavaScript, and favicon
 src/aqi.js        Shared parsing and AQI calculation
 test/             Parser and AQI tests
 server.js         Local Node.js server

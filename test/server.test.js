@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { aqiBand, parseAirnetFeed, parseWaqiAqi, parseWaqiUpdatedLabel, pm25ToUsAqi, parseWismaSatokPage } from '../src/aqi.js';
+import { aqiBand, malaysiaApiBand, parseAirnetFeed, parseApimsKuching, parseWaqiAqi, parseWaqiUpdatedLabel, pm25ToUsAqi, parseWismaSatokPage } from '../src/aqi.js';
 
 test('AQI bands follow the US AQI breakpoints', () => {
   assert.equal(aqiBand(50).level, 'good');
@@ -38,4 +38,15 @@ test('extracts the newest Wisma Satok value from the AirNet feed', () => {
     pm25: 239.5,
     observedAt: '2026-08-29T22:00:02.000Z'
   });
+});
+
+test('extracts the official Kuching Malaysia API reading from APIMS', () => {
+  const result = parseApimsKuching({ features: [{ attributes: {
+    STATION_ID: 'CA65Q', STATION_LOCATION: 'Kuching, SARAWAK', API: 342,
+    DATETIME: 1788289200000, PARAM_SELECTED: 'PM2.5', PLACE: 'Cawangan Farmasi Logistik Negeri Sarawak'
+  } }] });
+  assert.equal(result.aqi, 342);
+  assert.equal(result.stationId, 'CA65Q');
+  assert.equal(result.dominantPollutant, 'PM2.5');
+  assert.equal(malaysiaApiBand(result.aqi).level, 'hazardous');
 });

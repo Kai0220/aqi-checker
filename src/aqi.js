@@ -8,6 +8,35 @@ export function aqiBand(aqi) {
   return { label: 'Hazardous', level: 'hazardous' };
 }
 
+export function malaysiaApiBand(api) {
+  if (!Number.isFinite(api)) return { label: 'Unavailable', level: 'unknown' };
+  if (api <= 50) return { label: 'Good', level: 'good' };
+  if (api <= 100) return { label: 'Moderate', level: 'moderate' };
+  if (api <= 200) return { label: 'Unhealthy', level: 'unhealthy' };
+  if (api <= 300) return { label: 'Very unhealthy', level: 'very-unhealthy' };
+  return { label: 'Hazardous', level: 'hazardous' };
+}
+
+export function parseApimsKuching(payload) {
+  const data = typeof payload === 'string' ? JSON.parse(payload) : payload;
+  const attributes = data?.features?.find(feature =>
+    String(feature?.attributes?.STATION_LOCATION || '').toUpperCase().includes('KUCHING')
+  )?.attributes;
+  const api = Number(attributes?.API);
+  // ArcGIS exposes APIMS wall-clock timestamps as UTC-shaped epoch values.
+  // Normalize the Malaysia wall time to a real UTC instant before sending it to clients.
+  const observedAt = new Date(Number(attributes?.DATETIME) - 8 * 60 * 60 * 1000);
+  if (!attributes || !Number.isFinite(api) || !Number.isFinite(observedAt.getTime())) {
+    throw new Error('APIMS feed changed; the Kuching API reading was not found');
+  }
+  return {
+    aqi: Math.round(api), observedAt: observedAt.toISOString(), stationId: attributes.STATION_ID,
+    dominantPollutant: attributes.PARAM_SELECTED || null,
+    place: attributes.PLACE || attributes.STATION_LOCATION,
+    sourceCategory: attributes.CLASS || null
+  };
+}
+
 export function htmlToText(html) {
   return html
     .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, ' ')

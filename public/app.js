@@ -54,7 +54,7 @@ function renderSource(prefix, source) {
     time.textContent = source.observedLabel || displayObservationTime(source.observedAt);
     meter.style.left = `calc(${Math.min(source.aqi / 300 * 100, 100)}% - 5px)`;
     status.dataset.level = source.level;
-    liveSources[prefix] = source;
+    if (prefix !== 'apims') liveSources[prefix] = source;
   }
   loading.classList.add('hidden'); result.classList.remove('hidden');
   updateAqiGuide();
@@ -81,10 +81,12 @@ async function loadKuching(forceRefresh = false) {
     if (!response.ok || !data.sources) throw new Error(data.error || 'The Kuching readings are unavailable');
     renderSource('kuching', data.sources.kuching);
     renderSource('wisma', data.sources.wismaSatok);
+    renderSource('apims', data.sources.apimsKuching);
     document.querySelector('#updated').textContent = `Updated ${displayTime(data.fetchedAt)}${data.cached ? ' \u00B7 cached' : ''}`;
   } catch (error) {
     renderSource('kuching', { error: error.message });
     renderSource('wisma', { error: error.message });
+    renderSource('apims', { error: error.message });
     document.querySelector('#updated').textContent = 'Update failed';
   } finally {
     refreshButton.disabled = false;

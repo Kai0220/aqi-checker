@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Compare live Kuching air quality readings from AQICN and PurpleAir.">
+  <meta name="description" content="Compare live Kuching air quality readings from AQICN and Malaysia's official DOE APIMS service.">
   <title>Kuching Air Reader</title>
   <link rel="icon" href="/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/styles.css?v=7">
+  <link rel="stylesheet" href="/styles.css?v=8">
 </head>
 <body>
   <div class="glow glow-one"></div><div class="glow glow-two"></div>
@@ -22,7 +22,7 @@
     <section class="hero">
       <div class="eyebrow">KUCHING, SARAWAK</div>
       <h1>One city.<br><em>Three perspectives.</em></h1>
-      <p>Compare readings from a regional monitor and two local sensor locations around Kuching.</p>
+      <p>Compare two US AQI readings with Kuching's official Malaysian Air Pollutant Index.</p>
       <div class="location-chip"><span class="pin">&#9673;</span><span><small>MONITORING AREA</small><strong>Kuching, Sarawak, Malaysia</strong></span></div>
     </section>
 
@@ -56,16 +56,20 @@
           <footer class="widget-footer"><span>Wisma Satok, Jalan Kulas</span></footer>
         </article>
 
-        <article class="monitor-card widget-card purple-card">
-          <header><span class="source-icon purple">P</span><div><h3>PurpleAir 280734</h3><p>10-minute US EPA AQI</p></div><a href="https://map.purpleair.com/air-quality-standards-us-epa-aqi?select=280734&amp;opt=%2F1%2Flp%2Fa10%2Fp604800%2FcC0#8.56/1.2452/110.3562" target="_blank" rel="noreferrer" aria-label="Open sensor 280734 on PurpleAir">&#8599;</a></header>
-          <div class="widget-shell purpleair-widget">
-            <div id="PurpleAirWidget_280734_module_US_EPA_AQI_conversion_C0_average_10_layer_US_EPA_AQI">Loading PurpleAir widget&hellip;</div>
+        <article class="monitor-card widget-card" id="apims-card">
+          <header><span class="source-icon apims">MY</span><div><h3>Official Kuching API</h3><p>Malaysia DOE APIMS station</p></div><a href="https://eqms.doe.gov.my/APIMS/main" target="_blank" rel="noreferrer" aria-label="Open Malaysia DOE APIMS">&#8599;</a></header>
+          <div id="apims-loading" class="card-loading">Reading monitor&hellip;</div>
+          <div id="apims-result" class="hidden">
+            <div class="reading"><strong id="apims-aqi">&mdash;</strong><span>Malaysia API</span></div>
+            <span id="apims-status" class="status">Unavailable</span>
+            <div class="meter malaysia-meter"><i id="apims-meter"></i></div>
+            <div class="native-details"><span>Official hourly reading</span><time id="apims-time">&mdash;</time></div>
           </div>
-          <footer class="widget-footer"><span>Local PurpleAir sensor</span><span>10-minute average</span></footer>
+          <footer class="widget-footer"><span>Kuching DOE station</span><span>Malaysia API</span></footer>
         </article>
       </div>
 
-      <div class="comparison-note"><span>i</span><p>Readings may differ because the monitors use different sensor hardware, positions, averaging windows, and calculation methods. Compare the trend and category rather than treating the values as interchangeable.</p></div>
+      <div class="comparison-note"><span>i</span><p>The AQICN cards use US AQI, while APIMS uses Malaysia's API based on a 24-hour running average of the dominant pollutant. Their numbers are not directly interchangeable.</p></div>
     </section>
 
     <section class="aqi-guide" aria-labelledby="aqi-guide-title">
@@ -86,8 +90,7 @@
     </section>
   </main>
 
-  <footer class="page-footer"><span>Sources: <a href="https://aqicn.org/" target="_blank" rel="noreferrer">World Air Quality Index Project</a> and <a href="https://www2.purpleair.com/" target="_blank" rel="noreferrer">PurpleAir</a></span><span>For awareness, not medical guidance</span></footer>
-  <script src="/app.js?v=7" defer></script>
-  <script src="https://www.purpleair.com/pa.widget.js?key=JU9LU5Z4GK86VKZX&amp;module=US_EPA_AQI&amp;conversion=C0&amp;average=10&amp;layer=US_EPA_AQI&amp;container=PurpleAirWidget_280734_module_US_EPA_AQI_conversion_C0_average_10_layer_US_EPA_AQI" defer></script>
+  <footer class="page-footer"><span>Sources: <a href="https://aqicn.org/" target="_blank" rel="noreferrer">World Air Quality Index Project</a> and <a href="https://eqms.doe.gov.my/APIMS/main" target="_blank" rel="noreferrer">Malaysia DOE APIMS</a></span><span>For awareness, not medical guidance</span></footer>
+  <script src="/app.js?v=8" defer></script>
 </body>
 </html>

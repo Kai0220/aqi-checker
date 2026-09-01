@@ -16,7 +16,7 @@ Kuching Air Reader combines three perspectives:
 | --- | --- | --- |
 | Kuching | [AQICN city monitor](https://aqicn.org/city/malaysia/sarawak/kuching/) | Server-side extraction from the public city page |
 | Wisma Satok | [AQICN AirNet sensor](https://aqicn.org/station/malaysia-kuching-wisma-satok/) | Token-free live AirNet feed with US EPA AQI conversion |
-| PurpleAir 280734 | [PurpleAir map](https://map.purpleair.com/air-quality-standards-us-epa-aqi?select=280734) | Official 10-minute US EPA AQI widget |
+| Official Kuching API | [Malaysia DOE APIMS](https://eqms.doe.gov.my/APIMS/main) | Official hourly Malaysian Air Pollutant Index from the Kuching station |
 
 The readings are deliberately shown separately rather than averaged. Sensor hardware, placement, correction formulas, and averaging windows differ, so combining them into one number would hide useful context.
 
@@ -47,14 +47,14 @@ The guide intentionally excludes advertising and promotional links from the prov
 
 ## How it works
 
-The browser requests `/api/kuching` from the local Node.js server or Cloudflare Worker. The backend retrieves the two AQICN readings, normalizes their response shape, and returns JSON to the frontend. PurpleAir's official widget loads directly in the visitor's browser.
+The browser requests `/api/kuching` from the local Node.js server or Cloudflare Worker. The backend retrieves two AQICN readings plus the official Kuching record from the Malaysia DOE APIMS public map service, normalizes their response shape, and returns JSON to the frontend.
 
 ```text
 Browser
   ├─ /api/kuching ──> Node server or Cloudflare Worker
   │                     ├─ AQICN Kuching page
   │                     └─ AQICN AirNet feed (Wisma Satok)
-  └─ PurpleAir widget ─> PurpleAir
+  └─ /api/kuching ──> Malaysia DOE APIMS public map service
 ```
 
 Wisma Satok's live PM2.5 concentration is converted to US AQI using the EPA breakpoints in `src/aqi.js`. Backend results are cached for 60 seconds.
@@ -102,14 +102,15 @@ The Worker serves the files under `public/` and handles `/api/kuching` at the ed
   "location": "Kuching, Sarawak, Malaysia",
   "sources": {
     "kuching": { "aqi": 284, "observedLabel": "Updated on Sunday 8:00" },
-    "wismaSatok": { "aqi": 265, "pm25": 215.2, "observedAt": "2026-08-30T00:00:03.000Z" }
+    "wismaSatok": { "aqi": 265, "pm25": 215.2, "observedAt": "2026-08-30T00:00:03.000Z" },
+    "apimsKuching": { "aqi": 82, "standard": "Malaysia API", "stationId": "CA65Q" }
   },
   "fetchedAt": "2026-08-30T00:01:00.000Z",
   "cached": false
 }
 ```
 
-The header's **Refresh** button calls this endpoint with `?refresh=1`, bypassing the 60-second backend cache for an immediate AQICN update. PurpleAir continues refreshing through its own live widget. Avoid automating forced refreshes or using them for normal background traffic.
+The header's **Refresh** button calls this endpoint with `?refresh=1`, bypassing the 60-second backend cache for immediate AQICN and APIMS updates. Avoid automating forced refreshes or using them for normal background traffic.
 
 ## Project structure
 
@@ -127,7 +128,7 @@ wrangler.jsonc    Cloudflare deployment configuration
 
 Provider markup and public feeds can change without notice, which may temporarily break extraction. Values can also update at different times. Check the linked provider pages when a reading looks unusual.
 
-Before running a public or commercial deployment, review the [World Air Quality Index Project usage notice](https://aqicn.org/contact/) and [PurpleAir terms](https://www2.purpleair.com/policies/terms-of-service). Cache responses and avoid excessive requests to upstream services.
+Before running a public or commercial deployment, review the [World Air Quality Index Project usage notice](https://aqicn.org/contact/) and the [Malaysia DOE APIMS portal](https://eqms.doe.gov.my/APIMS/main). Cache responses and avoid excessive requests to upstream services.
 
 ## Contributing
 

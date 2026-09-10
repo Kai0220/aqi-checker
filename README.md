@@ -6,26 +6,27 @@ A lightweight, open-source air-quality dashboard for Kuching, Sarawak. It places
 
 ![Kuching Air Reader dashboard in dark mode](docs/assets/kuching-air-reader.png)
 
-The interface includes a one-click refresh control, provider observation times, a matching browser-tab icon, and responsive cards that adapt from a three-column desktop comparison to a single-column phone layout.
+The interface includes a one-click refresh control, provider observation times, a matching browser-tab icon, and responsive cards that adapt from a two-column desktop comparison to a single-column phone layout.
 
 ## What this project does
 
-Kuching Air Reader combines three perspectives:
+Kuching Air Reader combines four perspectives:
 
 | Reading | Source | Method |
 | --- | --- | --- |
 | Kuching | [AQICN city monitor](https://aqicn.org/city/malaysia/sarawak/kuching/) | Server-side extraction from the public city page |
 | Wisma Satok | [AQICN AirNet sensor](https://aqicn.org/station/malaysia-kuching-wisma-satok/) | Token-free live AirNet feed with US EPA AQI conversion |
+| The Learning Curve | [AQICN AirNet sensor](https://aqicn.org/station/malaysia-kuching-the-learning-curve/) | Token-free live AirNet feed with US EPA AQI conversion |
 | Official Kuching API | [Malaysia DOE APIMS](https://eqms.doe.gov.my/APIMS/main) | Official hourly Malaysian Air Pollutant Index from the Kuching station |
 
 The readings are deliberately shown separately rather than averaged. Sensor hardware, placement, correction formulas, and averaging windows differ, so combining them into one number would hide useful context.
 
 ## Features
 
-- Live comparison of three Kuching-area readings
+- Live comparison of four Kuching-area readings
 - Provider observation times in Malaysia time
 - One-click refresh that bypasses the backend cache
-- Live AQI health guide with highlighted Kuching and Wisma Satok bands
+- Live AQI health guide with highlighted Kuching, Wisma Satok and The Learning Curve bands
 - Native light and dark themes
 - Responsive desktop and mobile layouts
 - Equal-height comparison cards on desktop
@@ -39,7 +40,7 @@ The readings are deliberately shown separately rather than averaged. Sensor hard
 
 ## AQI health guide
 
-Below the live readings, the site explains all six US AQI bands—from Good to Hazardous—with concise health implications and suggested actions. The current Kuching and Wisma Satok readings appear as live badges inside their corresponding rows, making the numbers easier to interpret at a glance.
+Below the live readings, the site explains all six US AQI bands—from Good to Hazardous—with concise health implications and suggested actions. The current Kuching, Wisma Satok and The Learning Curve readings appear as live badges inside their corresponding rows, making the numbers easier to interpret at a glance.
 
 ![Live US AQI health guide with highlighted readings](docs/assets/aqi-health-guide.png)
 
@@ -47,17 +48,17 @@ The guide intentionally excludes advertising and promotional links from the prov
 
 ## How it works
 
-The browser requests `/api/kuching` from the local Node.js server or Cloudflare Worker. The backend retrieves two AQICN readings plus the official Kuching record from the Malaysia DOE APIMS public map service, normalizes their response shape, and returns JSON to the frontend.
+The browser requests `/api/kuching` from the local Node.js server or Cloudflare Worker. The backend retrieves three AQICN readings plus the official Kuching record from the Malaysia DOE APIMS public map service, normalizes their response shape, and returns JSON to the frontend.
 
 ```text
 Browser
   ├─ /api/kuching ──> Node server or Cloudflare Worker
   │                     ├─ AQICN Kuching page
-  │                     └─ AQICN AirNet feed (Wisma Satok)
+  │                     └─ AQICN AirNet feeds (Wisma Satok and The Learning Curve)
   └─ /api/kuching ──> Malaysia DOE APIMS public map service
 ```
 
-Wisma Satok's live PM2.5 concentration is converted to US AQI using the EPA breakpoints in `src/aqi.js`. Backend results are cached for 60 seconds.
+Live PM2.5 concentrations from Wisma Satok and The Learning Curve are converted to US AQI using the EPA breakpoints in `src/aqi.js`. Backend results are cached for 60 seconds.
 
 ## Run locally
 
@@ -103,6 +104,7 @@ The Worker serves the files under `public/` and handles `/api/kuching` at the ed
   "sources": {
     "kuching": { "aqi": 284, "observedLabel": "Updated on Sunday 8:00" },
     "wismaSatok": { "aqi": 265, "pm25": 215.2, "observedAt": "2026-08-30T00:00:03.000Z" },
+    "learningCurve": { "aqi": 173, "pm25": 99, "observedAt": "2026-09-10T02:00:00.000Z" },
     "apimsKuching": { "aqi": 82, "standard": "Malaysia API", "stationId": "CA65Q" }
   },
   "fetchedAt": "2026-08-30T00:01:00.000Z",

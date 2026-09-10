@@ -3,6 +3,8 @@ import { aqiBand, malaysiaApiBand, parseAirnetFeed, parseApimsKuching, parseWaqi
 const KUCHING_URL = 'https://aqicn.org/city/malaysia/sarawak/kuching/';
 const WISMA_SATOK_URL = 'https://aqicn.org/station/malaysia-kuching-wisma-satok/';
 const WISMA_SATOK_FEED_URL = 'https://airnet.waqi.info/airnet/feed/hourly/2508724';
+const LEARNING_CURVE_URL = 'https://aqicn.org/station/malaysia-kuching-the-learning-curve/';
+const LEARNING_CURVE_FEED_URL = 'https://airnet.waqi.info/airnet/feed/hourly/2640373';
 const APIMS_URL = 'https://eqms.doe.gov.my/APIMS/main';
 const APIMS_KUCHING_FEED_URL = "https://eqms.doe.gov.my/api3/publicmapproxy/PUBLIC_DISPLAY/CAQM_MCAQM_Current_Reading/MapServer/0/query?where=UPPER%28STATION_LOCATION%29%20LIKE%20%27%25KUCHING%25%27&outFields=*&returnGeometry=false&f=json";
 const headers = {
@@ -57,14 +59,15 @@ async function readings(request) {
     const cached = await cache.match(cacheKey);
     if (cached) return cached;
   }
-  const [kuching, wismaSatok, apimsKuching] = await Promise.all([
+  const [kuching, wismaSatok, learningCurve, apimsKuching] = await Promise.all([
     readKuching(),
     readSource(WISMA_SATOK_FEED_URL, parseAirnetFeed, 'Wisma Satok', WISMA_SATOK_URL),
+    readSource(LEARNING_CURVE_FEED_URL, parseAirnetFeed, 'The Learning Curve', LEARNING_CURVE_URL),
     readApimsKuching()
   ]);
   const response = Response.json({
     location: 'Kuching, Sarawak, Malaysia',
-    sources: { kuching, wismaSatok, apimsKuching },
+    sources: { kuching, wismaSatok, learningCurve, apimsKuching },
     fetchedAt: new Date().toISOString(),
     cached: false
   }, { headers: { 'Cache-Control': 'public, max-age=60' } });

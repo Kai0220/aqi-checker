@@ -47,6 +47,8 @@ function renderSource(prefix, source) {
   const time = document.querySelector(`#${prefix}-time`);
   const meter = document.querySelector(`#${prefix}-meter`);
   if (source.error) {
+    delete liveSources[prefix];
+    delete status.dataset.level;
     aqi.textContent = '\u2014'; status.textContent = 'Unavailable'; time.textContent = source.error;
     meter.style.left = '0%';
   } else {
@@ -66,7 +68,7 @@ function updateAqiGuide() {
     const container = document.querySelector(`[data-aqi-band="${source.level}"] .live-readings`);
     if (!container) return;
     const badge = document.createElement('span');
-    badge.textContent = `${prefix === 'wisma' ? 'Wisma Satok' : 'Kuching'} ${source.aqi}`;
+    badge.textContent = `${{ kuching: 'Kuching', wisma: 'Wisma Satok', learning: 'The Learning Curve' }[prefix]} ${source.aqi}`;
     container.append(badge);
   });
   document.querySelectorAll('[data-aqi-band]').forEach(row => row.classList.toggle('is-current', Boolean(row.querySelector('.live-readings span'))));
@@ -81,11 +83,13 @@ async function loadKuching(forceRefresh = false) {
     if (!response.ok || !data.sources) throw new Error(data.error || 'The Kuching readings are unavailable');
     renderSource('kuching', data.sources.kuching);
     renderSource('wisma', data.sources.wismaSatok);
+    renderSource('learning', data.sources.learningCurve || { error: 'New station loading; please refresh' });
     renderSource('apims', data.sources.apimsKuching);
     document.querySelector('#updated').textContent = `Updated ${displayTime(data.fetchedAt)}${data.cached ? ' \u00B7 cached' : ''}`;
   } catch (error) {
     renderSource('kuching', { error: error.message });
     renderSource('wisma', { error: error.message });
+    renderSource('learning', { error: error.message });
     renderSource('apims', { error: error.message });
     document.querySelector('#updated').textContent = 'Update failed';
   } finally {

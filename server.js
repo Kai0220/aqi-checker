@@ -11,8 +11,6 @@ const CACHE_TTL_MS = 60 * 1000;
 const KUCHING_URL = 'https://aqicn.org/city/malaysia/sarawak/kuching/';
 const WISMA_SATOK_URL = 'https://aqicn.org/station/malaysia-kuching-wisma-satok/';
 const WISMA_SATOK_FEED_URL = 'https://airnet.waqi.info/airnet/feed/hourly/2508724';
-const LEARNING_CURVE_URL = 'https://aqicn.org/station/malaysia-kuching-the-learning-curve/';
-const LEARNING_CURVE_FEED_URL = 'https://airnet.waqi.info/airnet/feed/hourly/2640373';
 const APIMS_URL = 'https://eqms.doe.gov.my/APIMS/main';
 const APIMS_KUCHING_FEED_URL = "https://eqms.doe.gov.my/api3/publicmapproxy/PUBLIC_DISPLAY/CAQM_MCAQM_Current_Reading/MapServer/0/query?where=UPPER%28STATION_LOCATION%29%20LIKE%20%27%25KUCHING%25%27&outFields=*&returnGeometry=false&f=json";
 let cache = null;
@@ -42,10 +40,9 @@ async function getJson(url, provider) {
 
 async function getKuchingReading(forceRefresh = false) {
   if (!forceRefresh && cache && Date.now() - cache.createdAt < CACHE_TTL_MS) return { ...cache.value, cached: true };
-  const [kuchingResult, wismaResult, learningResult, apimsResult] = await Promise.allSettled([
+  const [kuchingResult, wismaResult, apimsResult] = await Promise.allSettled([
     getHtml(KUCHING_URL, 'AQICN'),
     getHtml(WISMA_SATOK_FEED_URL, 'AQICN Wisma Satok'),
-    getJson(LEARNING_CURVE_FEED_URL, 'AQICN The Learning Curve'),
     getJson(APIMS_KUCHING_FEED_URL, 'Malaysia DOE APIMS')
   ]);
   let kuching;
@@ -71,17 +68,6 @@ async function getKuchingReading(forceRefresh = false) {
   } else {
     wismaSatok = { provider: 'WAQI / AQICN', station: 'Wisma Satok', error: wismaResult.reason.message, sourceUrl: WISMA_SATOK_URL };
   }
-  let learningCurve;
-  if (learningResult.status === 'fulfilled') {
-    try {
-      const parsed = parseAirnetFeed(learningResult.value);
-      learningCurve = { provider: 'WAQI / AQICN', station: 'The Learning Curve', ...parsed, ...aqiBand(parsed.aqi), sourceUrl: LEARNING_CURVE_URL };
-    } catch (error) {
-      learningCurve = { provider: 'WAQI / AQICN', station: 'The Learning Curve', error: error.message, sourceUrl: LEARNING_CURVE_URL };
-    }
-  } else {
-    learningCurve = { provider: 'WAQI / AQICN', station: 'The Learning Curve', error: learningResult.reason.message, sourceUrl: LEARNING_CURVE_URL };
-  }
   let apimsKuching;
   if (apimsResult.status === 'fulfilled') {
     try {
@@ -93,7 +79,7 @@ async function getKuchingReading(forceRefresh = false) {
   } else {
     apimsKuching = { provider: 'Malaysia DOE / APIMS', station: 'Kuching', standard: 'Malaysia API', error: apimsResult.reason.message, sourceUrl: APIMS_URL };
   }
-  const value = { location: 'Kuching, Sarawak, Malaysia', sources: { kuching, wismaSatok, learningCurve, apimsKuching }, fetchedAt: new Date().toISOString(), cached: false };
+  const value = { location: 'Kuching, Sarawak, Malaysia', sources: { kuching, wismaSatok, apimsKuching }, fetchedAt: new Date().toISOString(), cached: false };
   cache = { createdAt: Date.now(), value };
   return value;
 }
